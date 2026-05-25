@@ -1,0 +1,3 @@
+display_name: Report Template Writer
+short_description: Turn journal photos, notes, or briefs into fixed-format report drafts.
+default_prompt: Turn my template and source material into a report draft, mark uncertainty, then ask me to confirm or edit before producing the final version.
