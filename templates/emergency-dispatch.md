@@ -42,6 +42,31 @@ Output exactly this shape:
 - `工务添乘:` may use half-width colon if the user template does.
 - If a final stabling event includes wheel chock protection, write `入库并设置防溜`.
 
+## Source Priority
+
+When the user provides this template together with an image:
+
+1. Use the template only for labels and format.
+2. Use the image as the primary source for dynamic facts such as date, driver, vehicle number, station times, and visible passenger names.
+3. Use user-written supplements only when they are clearly corrections or current-report facts.
+4. Use template library defaults only for stable boilerplate such as common dispatch wording.
+5. If the image and pasted template disagree, do not copy the pasted template value. Use the image value or mark `[待确认]`.
+
+## Fillable Fields
+
+Dynamic fields that must come from image extraction or explicit user supplement:
+
+- 接令时间
+- 作业车号
+- 司机
+- 轨道车出入库应急时间
+- 接触网添乘人员
+- 工务添乘
+
+Stable boilerplate that may be supplied from the template library when the user has not provided a conflicting value:
+
+- 接令内容：工班值班员接松滋西站通知传达行调要求供电轨道车抢修应急出动
+
 ## Confirmed Example
 
 ```text
@@ -70,6 +95,7 @@ Output exactly this shape:
 ## Pitfalls
 
 - Do not treat old values in the template example as facts for the new report.
+- Do not output the user's pasted filled template before reading the image.
 - Do not merge image form fields into this report unless they map to these labels.
 - Do not add a separate `运行记录` table.
 - Do not infer passenger roles if the user has corrected `接触网添乘人员` and `工务添乘`.

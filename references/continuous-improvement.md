@@ -40,6 +40,19 @@ Match in this order:
 
 If a template matches, follow its `Output Contract`, `Formatting Rules`, and `Pitfalls`.
 
+## Template + Image Source Roles
+
+When a user provides both a filled template example and an image, classify the inputs before generating:
+
+- `template_contract`: field labels, order, punctuation, and line-break style.
+- `image_source`: dynamic facts visible in the image.
+- `user_supplement`: explicit current-report corrections or additions.
+- `template_library`: reusable structure, fixed boilerplate, and pitfalls.
+
+Do not copy old filled values from `template_contract` into the new report.
+
+Dynamic fields must come from `image_source` or `user_supplement`; if neither supports them, use `[待确认]`.
+
 ## New Template Capture
 
 When a final report format is confirmed and likely recurring:

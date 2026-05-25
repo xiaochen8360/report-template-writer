@@ -19,6 +19,7 @@ This skill is for template-based reporting, not generic summarization. The goal 
    - OCR journal photos, handwritten notes, whiteboards, screenshots, or paper records.
    - Extract facts and uncertain text.
    - Fill the report template.
+   - If both a filled template example and images are present, the images are the primary source for dynamic facts. The filled template example only provides labels, field order, and formatting unless the user explicitly marks it as supplemental facts.
 
 2. **Template + text notes**
    - Clean rough work logs, meeting notes, or fragmented records.
@@ -34,8 +35,10 @@ If the user provides only a template and no source material or brief, return a f
 
 ## Core Rules
 
+- When the user provides a template and image together, immediately use Template + images mode. Do not output the template's old filled values before reading the image.
 - Preserve the user's template structure, section order, headings, and required fields.
 - Treat the template as the output contract, not as source facts. Only output fields that exist in the template unless the user explicitly asks to add fields.
+- Template library entries may supply formatting rules, fixed boilerplate phrases, and known pitfalls. They must not supply dynamic facts such as date, driver, vehicle number, station times, passenger names, or dispatch time unless the user confirms them.
 - If the user says "只需要模板中的信息", "用模板格式", "一行只单列一处信息", or similar, switch to strict template mode.
 - Never invent concrete facts, names, dates, metrics, or results.
 - Mark missing or uncertain information as `[待确认]`, `[需补充]`, or `[识别不确定]`.
@@ -90,15 +93,21 @@ The output must keep the same shape: one field per line, timeline items as plain
 ## Workflow
 
 1. Identify the input mode.
-2. Check the reusable template library in `templates/README.md` when a domain or field pattern is recognizable.
-3. If a saved template matches, follow that template's output contract, formatting rules, and pitfalls.
-4. Separate the template from source facts. If the user provides an example filled with old values, extract its labels, order, and formatting as the template; do not treat old values as facts for the new report unless the user says they still apply.
-5. Parse the template structure: title, audience, period, headings, subheadings, fixed wording, table fields, required fields, optional fields, placeholders, line-break style, and whether it uses tables or plain lines.
-6. Extract source material:
+   - Template + image beats Template + text. If an image is attached and the user also pasted a filled template example, use Template + images mode.
+2. Split the user's input into roles:
+   - `template_contract`: labels, order, punctuation, line breaks, fixed headings.
+   - `image_source`: dynamic facts visible in images.
+   - `user_supplement`: explicit corrections or supplemental facts from the user.
+   - `template_library`: reusable structure, fixed boilerplate, pitfalls, and field mapping.
+3. Check the reusable template library in `templates/README.md` when a domain or field pattern is recognizable.
+4. If a saved template matches, follow that template's output contract, formatting rules, and pitfalls.
+5. Separate the template from source facts. If the user provides an example filled with old values, extract its labels, order, and formatting as the template; do not treat old values as facts for the new report unless the user says they still apply.
+6. Parse the template structure: title, audience, period, headings, subheadings, fixed wording, table fields, required fields, optional fields, placeholders, line-break style, and whether it uses tables or plain lines.
+7. Extract source material:
    - Images: OCR text in image order and flag unclear text.
    - Text notes: split rough notes into atomic items.
    - Generation brief: extract topic, audience, reporting period, emphasis, and tone.
-7. Build a structured intermediate record:
+8. Build a structured intermediate record:
    - `date_range`
    - `audience`
    - `projects`
@@ -113,14 +122,20 @@ The output must keep the same shape: one field per line, timeline items as plain
    - `support_needed`
    - `open_questions`
    - `uncertain_items`
-8. Apply user corrections as highest-priority facts.
-9. Map extracted items only to template fields using the field mapping guidance in `references/field-mapping.md` when needed.
-10. Rewrite into polished report language using `references/tone-rules.md` when needed.
-11. Produce `汇报初稿`, or a strict template-only draft when strict template mode is active.
-12. Add `待确认项` after the report only when there are unresolved items. Do not insert it into the report body in strict template mode.
-13. Ask the user to confirm or micro-edit, following `references/confirmation-rules.md`.
-14. When the user corrects the draft, follow `references/continuous-improvement.md`: capture reusable feedback, update the current output, and propose saving recurring formats.
-15. After confirmation, produce `最终汇报`.
+9. Apply facts by source priority:
+   - Latest explicit user correction.
+   - User-provided supplemental facts clearly intended for the current report.
+   - Image OCR or visual extraction.
+   - Template library fixed boilerplate only.
+   - `[待确认]`.
+   - Never use old filled values from `template_contract` as dynamic facts.
+10. Map extracted items only to template fields using the field mapping guidance in `references/field-mapping.md` when needed.
+11. Rewrite into polished report language using `references/tone-rules.md` when needed.
+12. Produce `汇报初稿`, or a strict template-only draft when strict template mode is active.
+13. Add `待确认项` after the report only when there are unresolved items. Do not insert it into the report body in strict template mode.
+14. Ask the user to confirm or micro-edit, following `references/confirmation-rules.md`.
+15. When the user corrects the draft, follow `references/continuous-improvement.md`: capture reusable feedback, update the current output, and propose saving recurring formats.
+16. After confirmation, produce `最终汇报`.
 
 ## Template Library and Feedback
 
