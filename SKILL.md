@@ -90,13 +90,15 @@ The output must keep the same shape: one field per line, timeline items as plain
 ## Workflow
 
 1. Identify the input mode.
-2. Separate the template from source facts. If the user provides an example filled with old values, extract its labels, order, and formatting as the template; do not treat old values as facts for the new report unless the user says they still apply.
-3. Parse the template structure: title, audience, period, headings, subheadings, fixed wording, table fields, required fields, optional fields, placeholders, line-break style, and whether it uses tables or plain lines.
-4. Extract source material:
+2. Check the reusable template library in `templates/README.md` when a domain or field pattern is recognizable.
+3. If a saved template matches, follow that template's output contract, formatting rules, and pitfalls.
+4. Separate the template from source facts. If the user provides an example filled with old values, extract its labels, order, and formatting as the template; do not treat old values as facts for the new report unless the user says they still apply.
+5. Parse the template structure: title, audience, period, headings, subheadings, fixed wording, table fields, required fields, optional fields, placeholders, line-break style, and whether it uses tables or plain lines.
+6. Extract source material:
    - Images: OCR text in image order and flag unclear text.
    - Text notes: split rough notes into atomic items.
    - Generation brief: extract topic, audience, reporting period, emphasis, and tone.
-5. Build a structured intermediate record:
+7. Build a structured intermediate record:
    - `date_range`
    - `audience`
    - `projects`
@@ -111,13 +113,23 @@ The output must keep the same shape: one field per line, timeline items as plain
    - `support_needed`
    - `open_questions`
    - `uncertain_items`
-6. Apply user corrections as highest-priority facts.
-7. Map extracted items only to template fields using the field mapping guidance in `references/field-mapping.md` when needed.
-8. Rewrite into polished report language using `references/tone-rules.md` when needed.
-9. Produce `汇报初稿`, or a strict template-only draft when strict template mode is active.
-10. Add `待确认项` after the report only when there are unresolved items. Do not insert it into the report body in strict template mode.
-11. Ask the user to confirm or micro-edit, following `references/confirmation-rules.md`.
-12. After confirmation, produce `最终汇报`.
+8. Apply user corrections as highest-priority facts.
+9. Map extracted items only to template fields using the field mapping guidance in `references/field-mapping.md` when needed.
+10. Rewrite into polished report language using `references/tone-rules.md` when needed.
+11. Produce `汇报初稿`, or a strict template-only draft when strict template mode is active.
+12. Add `待确认项` after the report only when there are unresolved items. Do not insert it into the report body in strict template mode.
+13. Ask the user to confirm or micro-edit, following `references/confirmation-rules.md`.
+14. When the user corrects the draft, follow `references/continuous-improvement.md`: capture reusable feedback, update the current output, and propose saving recurring formats.
+15. After confirmation, produce `最终汇报`.
+
+## Template Library and Feedback
+
+- Check `templates/` before using generic logic.
+- Use `templates/emergency-dispatch.md` for railway emergency dispatch reports.
+- Append reusable issues and corrections to `feedback.md` when filesystem access is available.
+- If filesystem access is not available, output a compact feedback block for manual saving.
+- Do not update core rules silently. Summarize proposed rule changes and ask for confirmation before changing `SKILL.md`.
+- Review `feedback.md` weekly to decide which repeated issues should become durable rules.
 
 ## Default Draft Output
 
@@ -173,3 +185,7 @@ Use bundled templates when the user names them:
 - `assets/templates/railway-emergency-dispatch.md`
 
 If the user provides their own template, prefer the user's template over bundled assets.
+
+Use the verified template library for domain-specific formats:
+
+- `templates/emergency-dispatch.md`
